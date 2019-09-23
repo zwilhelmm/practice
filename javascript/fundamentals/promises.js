@@ -1,5 +1,7 @@
 "use strict";
 
+// Practicing Promises syntax in Node.
+
 const main = () => {
   const generateRandom = () => {
     return new Promise((resolve, reject) => {
@@ -17,16 +19,9 @@ const main = () => {
   };
 
   const getRand = generateRandom()
-    .then(num => {
-      console.log("Result: generated an even number: ", num);
-    })
-    .catch(err => {
-      console.log("Result: generated an odd number: ", err);
-    })
-    .finally(res => {
-      console.log("Res: ", res);
-      console.log("Now closing the promise.");
-    });
+    .then(num => console.log("Result: generated an even number: ", num))
+    .catch(err => console.log("Result: generated an odd number: ", err))
+    .finally(res => console.log("Now closing the promise: ", res));
 
   console.log("getRand: ", getRand);
 };

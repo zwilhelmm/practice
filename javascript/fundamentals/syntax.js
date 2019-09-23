@@ -1,5 +1,7 @@
 "use strict";
 
+// Practicing assorted Node-unique syntax.
+
 const restOperator = () => {
   // Rest operator means "gather all parameters into an array."
   function sumAll(...args) {
