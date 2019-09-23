@@ -1,0 +1,5 @@
+.DS_Store
+.vscode/
+
+./restapi/node_modules
+./test/node_modules
