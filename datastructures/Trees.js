@@ -1,9 +1,6 @@
 "use strict";
 
-// Trees and graphs typically ask implement a tree, find a node, delete a node, or another well-known algorithm, or a modification thereof.
-
-// Note that binary search trees are only a type of binary tree.
-
+// Trees and graphs typically ask implement a tree, find a node, delete a node, or another well-known algorithm, or a modification thereof. Note that binary search trees are only a type of binary tree.
 class Node {
   constructor(val) {
     this.val = val;
@@ -23,7 +20,6 @@ class BinaryTree {
     let currentNode = this.root;
 
     while (currentNode.val != null || stack.length > 0) {
-      console.log("temp: ", currentNode.val);
       while (currentNode) {
         stack.push(currentNode.val);
         currentNode = currentNode.left;
@@ -64,118 +60,197 @@ class BinaryTree {
   }
 
   // Often used to print the tree.
-  printPreOrder(node) {
-    if (node === null) return;
-    console.log(node.val + " ");
-    this.printPreOrder(node.left);
-    this.printPreOrder(node.right);
+  preOrder(node) {
+    if (node != null) {
+      console.log(node.val);
+      this.preOrder(node.left);
+      this.preOrder(node.left);
+    }
   }
 
   // In binary search trees, nodes are given in non-decreasing order. For a non-increasing order, a variation with reversal is used.
-  printInOrder(node) {
-    if (node === null) return;
-    this.printInOrder(node.left);
-    console.log(node.val + " ");
-    this.printInOrder(node.right);
+  inOrder(node) {
+    if (node != null) {
+      console.log(node.val);
+      this.inOrder(node.right);
+    }
   }
 
   // Often used to delete the tree.
-  printPostOrder(node) {
-    if (node === null) return;
-    this.printPostOrder(node.left);
-    this.printPostOrder(node.right);
-    console.log(node.val + " ");
+  postOrder(node) {
+    if (node != null) {
+      this.postOrder(node.left);
+      this.postOrder(node.right);
+      console.log(node.val);
+    }
   }
 
-  insertIteratively(val) {
+  search(node, val) {
+    if (node === null) return null;
+    else if (val < node.val) return this.search(node.left, val);
+    else if (val > node.val) return this.search(node.right, val);
+    else return node;
+  }
+
+  insertRecursive(node, newNode) {
+    if (newNode.val < node.val) {
+      if (node.left === null) node.left = newNode;
+      else this.insertRecursive(node.left, newNode);
+    } else {
+      if (node.right === null) node.right = newNode;
+      else this.insertRecursive(node.right, newNode);
+    }
+  }
+
+  insert(val) {
     const newNode = new Node(val);
     if (this.root === null) this.root = newNode;
+    else this.insertRecursive(this.root, newNode);
+  }
+
+  isBalanced(node) {
+    if (node === null) return null;
+    return Math.abs(this.getHeight(node.left) - this.getHeight(node.right)) <= 1 &&
+      this.isBalanced(node.left) &&
+      this.isBalanced(node.right)
+      ? true
+      : false;
+  }
+
+  getSize(node) {
+    return node === null
+      ? 0
+      : this.getSize(node.left) + this.getSize(node.right) + 1;
+  }
+
+  getHeight(node) {
+    if (node === null) return 0;
     else {
-      let currentNode = this.root;
-      while (true) {
-        if (currentNode.val < val) {
-          if (currentNode.left != null) currentNode = currentNode.left;
-          else {
-            currentNode.left = newNode;
-            break;
-          }
-        } else if (currentNode.val >= val) {
-          if (currentNode.right != null) currentNode = currentNode.right;
-          else {
-            currentNode.right = newNode;
-            break;
-          }
-        }
-      }
+      const leftHeight = this.getHeight(node.left);
+      const rightHeight = this.getHeight(node.right);
+      return leftHeight > rightHeight ? leftHeight + 1 : rightHeight + 1;
     }
   }
 
-  insertRecursivelyHelper(node, val) {
-    // Recursive form.
-    if (node.left === null && node.right === null) {
-      const newNode = new Node(val);
-      if (val < node.val) node.left = newNode;
-      else if (val >= node.val) node.right = newNode;
+  getMinNode(node) {
+    return node.left === null ? node : this.getMinNode(node.left);
+  }
+
+  removeRecursive(node, val) {
+    if (node === null) return null;
+    else if (val < node.val) {
+      node.right = this.removeRecursive(node.right, val);
+      return node;
     } else {
-      if (val < node.val) this.insertRecursively(node.left, val);
-      else if (val >= node.val) this.insertRecursively(node.right, val);
+      if (node.left === null) {
+        node = node.right;
+        return node;
+      } else if (node.right === null) {
+        node = node.left;
+        return node;
+      }
+
+      const min = this.getMinNode(node.right);
+      node.val = min.val;
+
+      node.right = this.removeRecursive(node.right, min.val);
+      return node;
     }
   }
 
-  insertRecursively(val) {
-    if (this.root === null) this.root = new Node(val);
-    else this.insertRecursivelyHelper(this.root, val);
+  remove(val) {
+    this.root = this.removeRecursive(this.root, val);
   }
 }
 
+const binarySearchTreeTest = () => {
+  console.log("--- binarySearchTreeTest ---");
+  const bst = new BinaryTree();
+
+  bst.insert(15);
+  bst.insert(25);
+  bst.insert(10);
+  bst.insert(7);
+  bst.insert(22);
+  bst.insert(17);
+  bst.insert(13);
+  bst.insert(5);
+  bst.insert(9);
+  bst.insert(27);
+
+  /*
+            15 
+           /  \ 
+          10   25 
+         / \   / \ 
+        7  13 22  27 
+       / \    / 
+      5   9  17  
+  */
+
+  console.log("Expected: 5 7 9 10 13 15 17 22 25 27");
+  bst.inOrder(bst.root);
+
+  bst.remove(5);
+
+  /*
+            15 
+           /  \ 
+          10   25 
+         / \   / \ 
+        7  13 22  27 
+         \    / 
+          9  17  
+  */
+
+  console.log("Expected: 7 9 10 13 15 17 22 25 27");
+  bst.inOrder(bst.root);
+
+  bst.remove(7);
+
+  /*
+            15 
+           /  \ 
+          10   25 
+         / \   / \ 
+        9  13 22  27 
+              / 
+             17 
+  */
+
+  console.log("Expected: 9 10 13 15 17 22 25 27");
+  bst.inOrder(bst.root);
+
+  bst.remove(15);
+
+  /*
+            17 
+           /  \ 
+          10   25 
+         / \   / \ 
+        9  13 22  27 
+  */
+
+  console.log("Expected: 9 10 13 17 22 25 27");
+  bst.inOrder(bst.root);
+
+  console.log("PreOrder traversal:");
+  bst.preOrder(bst.root);
+
+  console.log("PostOrder traversal:");
+  bst.postOrder(bst.root);
+
+  console.log("Expected: 3");
+  console.log("Actual: ", bst.getHeight(bst.root));
+
+  console.log("Expected: 7");
+  console.log("Actual: ", bst.getSize(bst.root));
+
+  console.log("Expected: true");
+  console.log("Actual: ", bst.isBalanced(bst.root));
+};
+
 // 4.1 Implement a function to check if a tree is balanced. For the purposes of this question, a balanced tree is defined to be a tree such that no two leaf nodes differ in distance from the root by more than one.
-const isBalanced = node => {
-  // Get the height of left and right subtrees. Return true if the difference between the two heights is not more than 1, and if they are both individually balanced.
-  if (node === null) return null;
-  if (
-    Math.abs(getHeight(node.left) - getHeight(node.right)) <= 1 &&
-    isBalanced(node.left) &&
-    isBalanced(node.right)
-  )
-    return true;
-
-  return false;
-};
-
-const getHeight = node => {
-  return node === null
-    ? 0
-    : 1 + Math.max(getHeight(node.left), getHeight(node.right));
-};
-
-const isBalancedTest = () => {
-  const tree = new BinaryTree();
-  tree.root = new Node(1);
-  tree.root.left = new Node(2);
-  tree.root.right = new Node(3);
-  tree.root.left.left = new Node(4);
-  tree.root.left.right = new Node(5);
-  tree.root.left.left.left = new Node(8);
-
-  console.log("--- isBalancedTest ---");
-  console.log("Expected: false");
-  console.log("Actual: ", isBalanced(tree.root));
-};
-
-const orderTraversalTest = () => {
-  const tree = new BinaryTree();
-  tree.root = new Node(1);
-  tree.root.left = new Node(2);
-  tree.root.right = new Node(3);
-  tree.root.left.left = new Node(4);
-  tree.root.left.right = new Node(5);
-
-  console.log("--- orderTraversalTest ---");
-  console.log("Pre Order Traversal: ", tree.printPreOrder(tree.root));
-  console.log("In Order Traversal: ", tree.printInOrder(tree.root));
-  console.log("Post Order Traversal: ", tree.printPostOrder(tree.root));
-};
-
 const traverseInOrderWithStackTest = () => {
   const tree = new BinaryTree();
   tree.root = new Node(1);
@@ -202,7 +277,7 @@ const traverseInOrderWithoutStackTest = () => {
 };
 
 (() => {
-  isBalancedTest();
-  orderTraversalTest();
-  traverseInOrderWithoutStackTest();
+  // orderTraversalTest();
+  // traverseInOrderWithoutStackTest();
+  binarySearchTreeTest();
 })();
