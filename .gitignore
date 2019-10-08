@@ -1,5 +1,6 @@
 .DS_Store
 .vscode/
 
-./restapi/node_modules
-./test/node_modules
+./restapi/node_modules/*
+./test/node_modules/*
+./interviews/*
