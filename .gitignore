@@ -3,3 +3,6 @@
 
 ./restapi/node_modules/*
 ./test/node_modules/*
+
+./interviews
+./interviews/*
